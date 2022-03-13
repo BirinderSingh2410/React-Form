@@ -1,40 +1,28 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { Input } from '../Input/Input';
 import styled from 'styled-components';
-import { Headings } from '../Headings/Headings';
 import { SelectionForm } from '../SelectionForm/SelectionForm';
 import { JobPowered } from '../JobPowered/JobPowered';
 import ReCAPTCHA from "react-google-recaptcha";
 import {AiOutlineExclamationCircle} from "react-icons/ai";
+import { RaceDropDown } from '../RaceDropDown/RaceDropDown';
+import { useForm } from 'react-hook-form';
 
-const DetailBlock = styled.div`
+
+const DetailBlock = styled.form`
     width:100%;
     background-color:#f9f9f9;
     padding-top: 1vh;
 
-    button{
-        background-color: #4f65f1;;
-        border-radius:3px;
-        border:none;
-        color:white;
-        height: 40px;
-        width: 170px;
-        margin-top:4vh;
-        margin-left:40%;
-        font-size: 14px;
-        font-weight: 600;
-        :hover{
-            cursor:pointer;
-        }
-    }
 `
 
 const Captcha=styled.div`
-    width:100%;
-    padding:0 20%;
-    margin-top:4vh;
+    margin-top:5vh;
     .recaptcha{
-        margin-left:150px;
+        margin-left:34%;
+        div > div{
+            height:100px;
+        }
     }
 `;
 const SubmitApplication = styled.h1`
@@ -46,14 +34,14 @@ const Resopnse = styled.input`
     height: 35px;
     border-radius: 4px;
     border: 0.2px solid silver;
-    margin:0 15%;
+    margin:0 12.5%;
     font-size:15px;
     padding-left:2vw;
 `;
 const CoverLetter = styled.textarea`
     padding-top: 10px;
     width: 77%;
-    margin: 0 15%;
+    margin: 0 12.5%;
     font-size:16px;
     height: 130px;
     padding-left:1vw;
@@ -68,7 +56,7 @@ const HorizontalLine = styled.hr`
     color: #515357;
 `;
 const USEmployeeHeading = styled.h1`
-    padding:0 15%;
+    padding:0 12.5%;
     font-size: 17px;
     font-weight: 600;
     color: #515357;
@@ -81,10 +69,34 @@ const USEmployeeHeading = styled.h1`
         
     }
 `;
+const SubmitApplicationButton = styled.button`
+    background-color: #4f65f1;;
+    border-radius:3px;
+    border:none;
+    color:white;
+    height: 40px;
+    width: 170px;
+    margin-top:4vh;
+    margin-left:40%;
+    font-size: 14px;
+    font-weight: 600;
+    :hover{
+        cursor:pointer;
+    }
+
+`
+const Headings = styled.h1`
+    margin-left:12.5vw;
+    font-size: 17px;
+    font-weight: 600;
+    color: #515357;
+    margin-top:5vh;
+    margin-bottom:5vh;
+`
 const USEmployeeContent = styled.p`
     width:74%;
     color:#515357;
-    margin:0 15%;
+    margin:0 12.5%;
     font-size:15px;
 `;
 const optiontag=[
@@ -94,26 +106,32 @@ const optiontag=[
 ];
 
 export const Details = () => {
+    const[moredetail,showDetail] = useState(false);
+
+    function dropdown(){
+        showDetail(!moredetail);
+    }
+
     return (
         <DetailBlock>
-            <Headings content="SUBMIT YOUR APPLICATION" />
+            <Headings >SUBMIT YOUR APPLICATION</Headings>
             <Input label="Resume/CV" typeinput='submit' />
             <Input label="Fullname" typeinput="text" />
             <Input label="Email" typeinput="text" />
             <Input label="Phone" typeinput='text' />
             <Input label="Current Company" typeinput="text" />
 
-            <Headings content='LINKS' />
+            <Headings>LINKS</Headings>
             <Input label="LinkedIn URL" typeinput='text' />
             <Input label="Twitter URL" typeinput="text" />
             <Input label="GitHub URL" typeinput="text" />
             <Input label="Portfolio URL" typeinput='text' />
             <Input label="Other Website" typeinput="text" />
 
-            <Headings content='PREFERRED PRONOUNS' />
+            <Headings>PREFERRED PRONOUNS</Headings>
             <Resopnse placeholder='Type your response' />
 
-            <Headings content='ADDITIONAL INFORMATION' />
+            <Headings >ADDITIONAL INFORMATION</Headings>
             <CoverLetter placeholder='Add a cover letter or anything else you want to share.' />
 
             <HorizontalLine />
@@ -124,14 +142,15 @@ export const Details = () => {
             </USEmployeeContent>
 
             <SelectionForm Icon={null} selectionlabel='Gender' option={optiontag[0]}/>
-            <SelectionForm Icon={<AiOutlineExclamationCircle/>} selectionlabel='Race'  option={optiontag[1]}/>
+            <SelectionForm Icon={<AiOutlineExclamationCircle onClick={dropdown} />} selectionlabel='Race'  option={optiontag[1]}/>
+            {moredetail ? <RaceDropDown/> : null}
             <SelectionForm Icon={null} selectionlabel='Veteran Status' option={optiontag[2]}/>
 
             <Captcha>
-                <ReCAPTCHA className='recaptcha' sitekey="6Le1kc8eAAAAAOuMLNQ9MfWQcymXd8rV5dGDRdaE"/>
+                <ReCAPTCHA  className='recaptcha' sitekey="6Le1kc8eAAAAAOuMLNQ9MfWQcymXd8rV5dGDRdaE"/>
             </Captcha>
 
-            <button>SUBMIT APPLICATION</button>
+            <SubmitApplicationButton>SUBMIT APPLICATION</SubmitApplicationButton>
 
             <JobPowered/>
         </DetailBlock>

@@ -1,11 +1,12 @@
 import React from 'react'
+import { icons } from 'react-icons';
 import styled from 'styled-components'
 import DownArrow from '../../assests/images/down-arrow-svgrepo-com.svg';
 
 const SelectionFormBlock = styled.div`
     width:70%;
     height:8vh;
-    margin:0 15%;
+    margin:0 12.5%;
     margin-top:4vh;
     display:flex;
     justify-content:space-between;
@@ -14,7 +15,7 @@ const SelectionFormBlock = styled.div`
         font-size:17px;
     }
     div{
-        
+        margin-right:20%;
     }
     select{
         width:400px;
@@ -23,7 +24,7 @@ const SelectionFormBlock = styled.div`
         color:#515357;
         font-size:17px;
         border-radius:4px;
-        padding-left:1vw;
+        padding-left:1v
         border:none;
     }
 
@@ -41,8 +42,7 @@ interface SelectionProp{
 export const SelectionForm : React.FC<SelectionProp> = ({selectionlabel,option,Icon}) => {
   return (
     <SelectionFormBlock>
-        <p>{selectionlabel}</p>
-        <div>{Icon}</div>
+        <p>{selectionlabel} {Icon}</p>
         <select>
             {
                 option.map((i) =>{
