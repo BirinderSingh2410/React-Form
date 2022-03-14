@@ -6,16 +6,16 @@ import DownArrow from '../../assests/images/down-arrow-svgrepo-com.svg';
 const SelectionFormBlock = styled.div`
     width:70%;
     height:8vh;
-    margin:0 12.5%;
     margin-top:4vh;
     display:flex;
     justify-content:space-between;
     p{
         font-size:17px;
+        height:50px;
     }
     select{
-        width:400px;
-        height:32px;
+        width:100%;
+        height:40px;
         background-color:#E2E2E2;
         color:#515357;
         font-size:17px;
@@ -24,14 +24,22 @@ const SelectionFormBlock = styled.div`
         border:none;
     }
 
+    @media (max-width:800px){
+        flex-direction:column;
+        height:10vh;
+
+    }
 `;
 
-const ParaBlock = styled.div`
-    margin-left:20%;
-`
+
 const SelectionBlock = styled.div`
     display:flex;
     flex-direction:column;
+    width:55%;
+    
+    @media (max-width:800px){
+        width:100%;
+    }
 `
 
 interface SelectionProp{
@@ -45,9 +53,8 @@ interface SelectionProp{
 export const SelectionForm : React.FC<SelectionProp> = ({selectionlabel,option,Icon,register,rightoption}) => {
   return (
     <SelectionFormBlock>
-        <ParaBlock>
-            <p>{selectionlabel} {Icon}</p>
-        </ParaBlock>
+    
+        <p>{selectionlabel} {Icon}</p>
         <SelectionBlock>
             <select  {...register}>
                 {

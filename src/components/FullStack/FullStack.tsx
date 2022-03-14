@@ -7,9 +7,9 @@ const FullStackBlock = styled.div`
     margin-top:100px;
 `;
 const FullStackContentBlock = styled.div`
-    width:65%;
+    width:70%;
     right:0;
-    margin:0 12.5%;
+    margin:0 15%;
     text-align:left;
     padding-bottom: 6vh;
 `;

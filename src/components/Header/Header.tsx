@@ -18,9 +18,9 @@ const HeaderImage  = styled.div`
 const Image = styled.img.attrs({
   src: `${RenderImage}`
 })`
-  width: 185px;
-  height: 70px;
-  padding: 0 12.5%;
+  width: 200px;
+  height: 80px;
+  padding:0 15%;
   position:relatives
 `;
 

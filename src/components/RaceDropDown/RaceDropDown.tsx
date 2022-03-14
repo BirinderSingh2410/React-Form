@@ -3,10 +3,11 @@ import styled from 'styled-components'
 
 const DropDown = styled.div`
     width:100%;
-    padding: 1% 46%;
+    text-align: -webkit-center;
 `;
 const ListBlock = styled.ul`
     width:400px;
+    text-align:left;
 `;
 const ListItem  = styled.li`
     margin-bottom:1vh;

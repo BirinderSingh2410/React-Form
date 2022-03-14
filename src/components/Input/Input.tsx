@@ -5,17 +5,28 @@ import {MdOutlineAttachFile} from 'react-icons/md'
 import { useForm, UseFormProps } from 'react-hook-form';
 
 const InputBlock = styled.div`
-    width:75%;
+    width:100%;
     text-align:left;
     display:flex;  
     justify-content:space-between;
-    align-items:baseline;
-    margin:auto;
     margin-bottom: 4vh;
+    div{
+        width:70%;
+    }
+    @media (max-width: 800px){
+        flex-direction:column;
+        div{
+            width:95%;
+        }
+    }
 `;
 const Label = styled.p`
     color: #515358;
     font:20px;
+
+    @media(max-width:800px){
+        margin-bottom:2vh;
+    }
 `
 const RequiredLabel = styled.p`
     ::after{
@@ -24,26 +35,28 @@ const RequiredLabel = styled.p`
     }
     color: #515358;
     font:20px;
+    
+    @media(max-width:800px){
+        margin-bottom:2vh;
+    }
 `
 const InputTextBlock = styled.div`
     display:flex;
     flex-direction:column;
 `
 const InputBar = styled.input`
-    width: 500px;
-    height: 45px;
+    width: 99%;
+    height: 40px;
     border-radius: 4px;
-    margin-right:10%;
-    border: 0.2px solid silver
+    border: 0.2px solid silver;
+    font-size:18px;
 `;
 const UploadResume = styled.input`
-    width: 280px;
+    width: 180px;
     height: 45px;
-    margin-right:10%;
     border-radius: 4px;
     border: 0.2px solid silver;
     background-color:#EFEFEF;
-    margin:auto;
     text-align:center;
 `;
 
@@ -61,7 +74,9 @@ export const Input :React.FC<InputProps> =({label,typeinput,register,required,er
     return (
     <InputBlock>
         {required ? <RequiredLabel>{label}</RequiredLabel> : <Label>{label}</Label>}
-        {typeinput === "file" ? <UploadResume type={typeinput}/> : <InputTextBlock><InputBar type={typeinput} {...register}/>{error ? <small style={{color:"red"}}>{errormessage}</small>:null}</InputTextBlock>}
+        <div>
+            {typeinput === "file" ? <UploadResume type={typeinput}/> : <InputTextBlock><InputBar type={typeinput} {...register}/>{error ? <small style={{color:"red"}}>{errormessage}</small>:null}</InputTextBlock>}
+        </div>
     </InputBlock>
   )
 }
