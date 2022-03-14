@@ -37,13 +37,16 @@ interface SelectionProp{
     selectionlabel:string;
     option:string[];
     Icon:JSX.Element | null;
+    register:any,
 }
 
-export const SelectionForm : React.FC<SelectionProp> = ({selectionlabel,option,Icon}) => {
+export const SelectionForm : React.FC<SelectionProp> = ({selectionlabel,option,Icon,register,}) => {
   return (
     <SelectionFormBlock>
-        <p>{selectionlabel} {Icon}</p>
-        <select>
+        <div>
+            <p>{selectionlabel} {Icon}</p>
+        </div>
+        <select {...register}>
             {
                 option.map((i) =>{
                     return(

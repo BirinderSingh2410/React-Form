@@ -4,6 +4,7 @@ import './App.css';
 import { Header } from './components/Header/Header';
 import { FullStack } from './components/FullStack/FullStack';
 import { Details } from './components/Details/Details';
+import { JobPowered } from './components/JobPowered/JobPowered';
 
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
      <Header/>
      <FullStack/>
      <Details/>
+     <JobPowered/>
    </div>
   )
 }
