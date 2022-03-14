@@ -44,13 +44,7 @@ const UploadResume = styled.input`
     border: 0.2px solid silver;
     background-color:#EFEFEF;
     margin:auto;
-    .pin-icon{
-        font-size:17px;
-    }
-    :hover
-    {
-        cursor:pointer;
-    }
+    text-align:center;
 `;
 
 interface InputProps{
@@ -67,7 +61,7 @@ export const Input :React.FC<InputProps> =({label,typeinput,register,required,er
     return (
     <InputBlock>
         {required ? <RequiredLabel>{label}</RequiredLabel> : <Label>{label}</Label>}
-        {typeinput === "submit" ? <UploadResume style={{display:"none"}}/>: <InputTextBlock><InputBar type={typeinput} {...register}/>{error ? <small style={{color:"red"}}>{errormessage}</small>:null}</InputTextBlock>}
+        {typeinput === "file" ? <UploadResume type={typeinput}/> : <InputTextBlock><InputBar type={typeinput} {...register}/>{error ? <small style={{color:"red"}}>{errormessage}</small>:null}</InputTextBlock>}
     </InputBlock>
   )
 }

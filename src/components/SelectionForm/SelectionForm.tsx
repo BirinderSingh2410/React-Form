@@ -10,16 +10,12 @@ const SelectionFormBlock = styled.div`
     margin-top:4vh;
     display:flex;
     justify-content:space-between;
-    flex-grow:2;
     p{
         font-size:17px;
     }
-    div{
-        margin-right:20%;
-    }
     select{
         width:400px;
-        height:40px;
+        height:32px;
         background-color:#E2E2E2;
         color:#515357;
         font-size:17px;
@@ -30,32 +26,41 @@ const SelectionFormBlock = styled.div`
 
 `;
 
-
-
+const ParaBlock = styled.div`
+    margin-left:20%;
+`
+const SelectionBlock = styled.div`
+    display:flex;
+    flex-direction:column;
+`
 
 interface SelectionProp{
     selectionlabel:string;
     option:string[];
     Icon:JSX.Element | null;
     register:any,
+    rightoption:boolean
 }
 
-export const SelectionForm : React.FC<SelectionProp> = ({selectionlabel,option,Icon,register,}) => {
+export const SelectionForm : React.FC<SelectionProp> = ({selectionlabel,option,Icon,register,rightoption}) => {
   return (
     <SelectionFormBlock>
-        <div>
+        <ParaBlock>
             <p>{selectionlabel} {Icon}</p>
-        </div>
-        <select {...register}>
-            {
-                option.map((i) =>{
-                    return(
-                        <option>{i}</option>
-                    )
-                })
-            }
-            <img src={DownArrow}/>
-        </select>
+        </ParaBlock>
+        <SelectionBlock>
+            <select  {...register}>
+                {
+                    option.map((i) =>{
+                        return(
+                            <option>{i}</option>
+                        )
+                    })
+                }
+                <img src={DownArrow}/>
+            </select>
+            {rightoption ? <small style={{color:"red"}}>Select valid option</small>:null}
+        </SelectionBlock>
     </SelectionFormBlock>
   )
 }

@@ -8,6 +8,7 @@ import { RaceDropDown } from '../RaceDropDown/RaceDropDown';
 import { useForm } from 'react-hook-form';
 import { ErrorMessage } from '@hookform/error-message';
 import { getNameOfDeclaration } from 'typescript';
+import { getValue } from '@testing-library/user-event/dist/utils';
 
 
 const DetailBlock = styled.form`
@@ -131,15 +132,24 @@ type FormType = {
 }
 
 export const Details = () => {
+    const {register,handleSubmit,formState:{errors},watch} = useForm<FormType>();
     const[moredetail,showDetail] = useState(false);
-    const {register,handleSubmit,formState:{errors}} = useForm<FormType>();
+    const[gendervaluechange,setGender] =useState(false);
+    const gendervalue = watch('gender');
 
     function dropdown(){
         showDetail(!moredetail);
     }
-
-    const FormSubmit = handleSubmit((data) => console.log(data));
-    console.log();
+    
+    const FormSubmit = handleSubmit((data) =>{
+        if(gendervalue != 'Select ...'){
+            setGender(false)
+            console.log(data);
+        }
+        else{
+            setGender(true);
+        }
+    })
     return (
         <DetailBlock onSubmit={FormSubmit}>
             <Headings >SUBMIT YOUR APPLICATION</Headings>
@@ -151,29 +161,30 @@ export const Details = () => {
 
             <Input label="Email" errormessage="This Field is Required" error={errors.email} typeinput="email" required={true} register={{...register('email',{required:true,})}}/>
             
-            <Input label="Phone" errormessage="" typeinput='phone' error={null} required={false} register={{...register('phone',{max:13})}}/>
+            <Input label="Phone" errormessage="Enter the valid Number" typeinput='tel' error={errors.phone} required={false} register={{...register('phone')}}/>
             
             <Input label="Current Company" errormessage="" error={null} typeinput="text" required={false} register={{...register('currentcompany')}}/>
 
             <Headings>LINKS</Headings>
 
             
-            <Input label="LinkedIn URL" errormessage="" typeinput='text' error={null} required={false} register={{...register('linkedin',{required:true})}}/>
+            <Input label="LinkedIn URL" errormessage="Enter the valid value" typeinput='email' error={errors.linkedin} required={false} register={{...register('linkedin',{required:true})}}/>
             
-            <Input label="Twitter URL" typeinput="text" errormessage="" error={null} required={false} register={{...register('twitter')}}/>
+            <Input label="Twitter URL" typeinput="email" errormessage="" error={null} required={false} register={{...register('twitter')}}/>
             
-            <Input label="GitHub URL" typeinput="text" errormessage="" required={false} error={null} register={{...register('github')}}/>
+            <Input label="GitHub URL" typeinput="email" errormessage="" required={false} error={null} register={{...register('github')}}/>
             
-            <Input label="Portfolio URL" typeinput='text' errormessage="" error={null} required={false} register={{...register('portfolio')}}/>
+            <Input label="Portfolio URL" typeinput='email' errormessage="" error={null} required={false} register={{...register('portfolio')}}/>
             
             <Input label="Other Website" typeinput="text" errormessage="" error={null} required={false} register={{...register('other')}}/>
 
             <Headings>PREFERRED PRONOUNS</Headings>
-            <Resopnse placeholder='Type your response' {...register('response')}/>
+            <Resopnse placeholder='Type your response' {...register('response',{maxLength:15})}/>
+            {errors.response ? <small style={{color:"red",margin:"0 12.5%"}}>MAX 15 Characters Allowed</small>:null}
 
             <Headings >ADDITIONAL INFORMATION</Headings>
-            <CoverLetter placeholder='Add a cover letter or anything else you want to share.' {...register('additionalinfo')}/>
-
+            <CoverLetter placeholder='Add a cover letter or anything else you want to share.' {...register('additionalinfo',{minLength:30})} />
+            {errors.additionalinfo &&(<small style={{color:"red",margin:"0 12.5%"}}>Minimum 50 characters Required</small>)}
             <HorizontalLine />
 
             <USEmployeeHeading>U.S. EQUAL EMPLOYMENT OPPORTUNITY INFORMATION</USEmployeeHeading>
@@ -181,12 +192,12 @@ export const Details = () => {
                 Our company values diversity. To ensure that we comply with reporting requirements and to learn more about how we can increase diversity in our candidate pool, we invite you to voluntarily provide demographic information in a confidential survey at the end of this application. Providing this information is optional. It will not be accessible or used in the hiring process, and has no effect on your opportunity for employment.
             </USEmployeeContent>
 
-            <SelectionForm Icon={null} selectionlabel='Gender' option={optiontag[0]} register={{...register('gender',{required:true})}} />
+            <SelectionForm Icon={null} selectionlabel='Gender' rightoption={gendervaluechange} option={optiontag[0]} register={{...register('gender',{required:true,})}} />
 
-            <SelectionForm Icon={<AiOutlineExclamationCircle onClick={dropdown} />} selectionlabel='Race'  option={optiontag[1]} register={{...register('race',{required:true})}} />
+            <SelectionForm Icon={<AiOutlineExclamationCircle onClick={dropdown} />} rightoption={false} selectionlabel='Race'  option={optiontag[1]} register={{...register('race',{required:true})}} />
             {moredetail ? <RaceDropDown/> : null}
             
-            <SelectionForm Icon={null} selectionlabel='Veteran Status' option={optiontag[2]} register={{...register('veteranstatus',{required:true})}} />
+            <SelectionForm Icon={null} selectionlabel='Veteran Status' rightoption={false} option={optiontag[2]} register={{...register('veteranstatus',{required:true})}} />
 
             <Captcha>
                 <ReCAPTCHA  className='recaptcha' sitekey="6Le1kc8eAAAAAOuMLNQ9MfWQcymXd8rV5dGDRdaE"/>
