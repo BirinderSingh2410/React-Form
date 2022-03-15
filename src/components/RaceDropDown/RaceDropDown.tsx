@@ -4,6 +4,10 @@ import styled from 'styled-components'
 const DropDown = styled.div`
     width:100%;
     text-align: -webkit-center;
+    margin-top:4vh;
+    @media (max-width:800px){
+        text-align:center;
+    }
 `;
 const ListBlock = styled.ul`
     width:400px;
@@ -23,6 +27,7 @@ const ListItem  = styled.li`
         line-height:20px;
         font-size:12px;
     }
+
 `
 const Array=[
         {

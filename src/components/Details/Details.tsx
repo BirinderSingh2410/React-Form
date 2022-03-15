@@ -9,6 +9,7 @@ import { useForm } from 'react-hook-form';
 
 
 
+
 const DetailBlock = styled.form`
     width:100%;
     background-color:#f9f9f9;
@@ -23,11 +24,13 @@ const Captcha = styled.div`
     margin-top:5vh;
     width: 100%;
     text-align: -webkit-center;
-    .recaptcha{
-        div > div{
-            height:100px;
+         div{
+             div{
+                 div{
+                        overflow-y:hidden;
+                    }
+                }
         }
-    }
 `;
 const SubmitApplication = styled.h1`
     padding:0 15%;
@@ -35,6 +38,8 @@ const SubmitApplication = styled.h1`
 `
 const Resopnse = styled.input`
     width:73%;
+    display:flex;
+    flex-direction:column;
     height: 35px;
     border-radius: 4px;
     border: 0.2px solid silver;
@@ -49,6 +54,8 @@ const CoverLetter = styled.textarea`
     padding-top: 10px;
     width: 74%;
     font-size:16px;
+    display:flex;
+    flex-direction:column;
     height: 130px;
     padding-left:1vw;
     margin-bottom:2vh;
@@ -126,6 +133,7 @@ const optiontag = [
 ];
 
 type FormType = {
+    resume:string,
     fullname: string,
     email: string,
     phone: number,
@@ -147,56 +155,71 @@ export const Details = () => {
     const [moredetail, showDetail] = useState(false);
     const [gendervaluechange, setGender] = useState(false);
     const gendervalue = watch('gender');
+    const[captcha,setCaptcha] = useState(false);
 
     function dropdown() {
         showDetail(!moredetail);
     }
 
+    async function database(data:object){
+        const formdata = await fetch("https://fullstack-reactform-default-rtdb.firebaseio.com/fullstackdata.json",{
+            method:"POST",
+            headers:{
+                "Content-Type": "application.json",
+            },
+            body: JSON.stringify(data)
+        })
+    }
+
     const FormSubmit = handleSubmit((data) => {
-        if (gendervalue != 'Select ...') {
-            setGender(false)
+        if(gendervalue != 'Select ...'){
+            setGender(false);
+        }
+        if (gendervalue && captcha) {
+            database(data);
             console.log(data);
         }
         else {
             setGender(true);
         }
     })
+
     return (
-        <DetailBlock onSubmit={FormSubmit}>
+        <DetailBlock onSubmit={FormSubmit} method="POST">
             <DetailInnerBlock>
                 <Headings >SUBMIT YOUR APPLICATION</Headings>
 
 
-                <Input label="Resume/CV" typeinput='file' error={null} required={true} register={null} errormessage="" />
+                <Input label="Resume/CV" typeinput='file' error={null} required={true} register={{...register("resume")}} errormessage="" />
 
                 <Input label="Fullname" typeinput="text" error={errors.fullname} required={true} errormessage="Minimum 10 characters required" register={{ ...register('fullname', { required: true, minLength: 10 }) }} />
 
-                <Input label="Email" errormessage="This Field is Required" error={errors.email} typeinput="email" required={true} register={{ ...register('email', { required: true, }) }} />
+                <Input label="Email" errormessage="This Field is Required" error={errors.email} typeinput="type" required={true} register={{ ...register('email', { required: true,pattern:/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/ }) }} />
 
-                <Input label="Phone" errormessage="Enter the valid Number" typeinput='tel' error={errors.phone} required={false} register={{ ...register('phone') }} />
+                <Input label="Phone" errormessage="Enter the valid Phone Number" typeinput='tel' error={errors.phone} required={false} register={{ ...register('phone',{pattern:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,maxLength:15}) }} />
 
                 <Input label="Current Company" errormessage="" error={null} typeinput="text" required={false} register={{ ...register('currentcompany') }} />
 
                 <Headings>LINKS</Headings>
 
 
-                <Input label="LinkedIn URL" errormessage="Enter the valid value" typeinput='email' error={errors.linkedin} required={false} register={{ ...register('linkedin', { required: true }) }} />
+                <Input label="LinkedIn URL" errormessage="Enter the valid URL" typeinput='text' error={errors.linkedin} required={false} register={{ ...register('linkedin', { pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:5 }) }} />
 
-                <Input label="Twitter URL" typeinput="email" errormessage="" error={null} required={false} register={{ ...register('twitter') }} />
+                <Input label="Twitter URL" typeinput="text" errormessage="Enter the valid URL" error={null} required={false} register={{ ...register('twitter',{minLength:7,pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/},) }} />
 
-                <Input label="GitHub URL" typeinput="email" errormessage="" required={false} error={null} register={{ ...register('github') }} />
+                <Input label="GitHub URL" typeinput="text" errormessage="" required={false} error={null} register={{ ...register('github') }} />
 
-                <Input label="Portfolio URL" typeinput='email' errormessage="" error={null} required={false} register={{ ...register('portfolio') }} />
+                <Input label="Portfolio URL" typeinput='text' errormessage="Enter the valid URL" error={null} required={false} register={{ ...register('portfolio',{pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:7}) }} />
 
-                <Input label="Other Website" typeinput="text" errormessage="" error={null} required={false} register={{ ...register('other') }} />
+                <Input label="Other Website" typeinput="text" errormessage="Enter the valid URL" error={null} required={false} register={{ ...register('other',{pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:7}) }} />
 
                 <Headings>PREFERRED PRONOUNS</Headings>
-                <Resopnse placeholder='Type your response' {...register('response', { maxLength: 15 })} />
-                {errors.response ? <small style={{ color: "red", margin: "0 12.5%" }}>MAX 15 Characters Allowed</small> : null}
+                <Resopnse placeholder='Type your response' {...register('response', { maxLength:20 })} />
+                {errors.response ? <small style={{ color: "red" }}>MAX 20 Characters Allowed</small> : null}
 
                 <Headings >ADDITIONAL INFORMATION</Headings>
                 <CoverLetter placeholder='Add a cover letter or anything else you want to share.' {...register('additionalinfo', { minLength: 30 })} />
-                {errors.additionalinfo && (<small style={{ color: "red", margin: "0 12.5%" }}>Minimum 50 characters Required</small>)}
+                {errors.additionalinfo && (<small style={{ color: "red"}}>Minimum 50 characters Required</small>)}
                 <HorizontalLine />
 
                 <USEmployeeHeading>U.S. EQUAL EMPLOYMENT OPPORTUNITY INFORMATION</USEmployeeHeading>
@@ -212,10 +235,11 @@ export const Details = () => {
                 <SelectionForm Icon={null} selectionlabel='Veteran Status' rightoption={false} option={optiontag[2]} register={{ ...register('veteranstatus', { required: true }) }} />
 
                 <Captcha>
-                    <ReCAPTCHA sitekey="6Le1kc8eAAAAAOuMLNQ9MfWQcymXd8rV5dGDRdaE" />
+                    <ReCAPTCHA sitekey="6Le1kc8eAAAAAOuMLNQ9MfWQcymXd8rV5dGDRdaE" onChange={()=>{setCaptcha(true)}}/>
+                    {captcha ? null:<small style={{color:"red"}}>Verification Required</small>}
                 </Captcha>
 
-                <SubmitButtonBlock><SubmitApplicationButton type="submit" /></SubmitButtonBlock>
+                <SubmitButtonBlock><SubmitApplicationButton type="submit" value="Submit Application" /></SubmitButtonBlock>
             </DetailInnerBlock>
         </DetailBlock>
     )

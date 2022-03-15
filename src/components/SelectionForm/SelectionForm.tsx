@@ -5,7 +5,7 @@ import DownArrow from '../../assests/images/down-arrow-svgrepo-com.svg';
 
 const SelectionFormBlock = styled.div`
     width:70%;
-    height:8vh;
+    height:9vh;
     margin-top:4vh;
     display:flex;
     justify-content:space-between;
