@@ -6,7 +6,8 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { RaceDropDown } from '../RaceDropDown/RaceDropDown';
 import { useForm } from 'react-hook-form';
-
+import {addDoc,collection} from 'firebase/firestore';
+import { db } from '../Firebase/Firebase';
 
 
 
@@ -133,7 +134,6 @@ const optiontag = [
 ];
 
 type FormType = {
-    resume:string,
     fullname: string,
     email: string,
     phone: number,
@@ -156,19 +156,14 @@ export const Details = () => {
     const [gendervaluechange, setGender] = useState(false);
     const gendervalue = watch('gender');
     const[captcha,setCaptcha] = useState(false);
+    const applicantCollection = collection(db , "applicants")
 
     function dropdown() {
         showDetail(!moredetail);
     }
-
-    async function database(data:object){
-        const formdata = await fetch("https://fullstack-reactform-default-rtdb.firebaseio.com/fullstackdata.json",{
-            method:"POST",
-            headers:{
-                "Content-Type": "application.json",
-            },
-            body: JSON.stringify(data)
-        })
+    
+    const newApplicant = async(data:object) =>{
+        await addDoc(applicantCollection,data)
     }
 
     const FormSubmit = handleSubmit((data) => {
@@ -176,7 +171,7 @@ export const Details = () => {
             setGender(false);
         }
         if (gendervalue && captcha) {
-            database(data);
+            newApplicant(data);
             console.log(data);
         }
         else {
@@ -185,12 +180,12 @@ export const Details = () => {
     })
 
     return (
-        <DetailBlock onSubmit={FormSubmit} method="POST">
+        <DetailBlock onSubmit={FormSubmit}>
             <DetailInnerBlock>
                 <Headings >SUBMIT YOUR APPLICATION</Headings>
 
 
-                <Input label="Resume/CV" typeinput='file' error={null} required={true} register={{...register("resume")}} errormessage="" />
+                <Input label="Resume/CV" typeinput='file' error={null} required={true} register={null} errormessage="Upload Resume" />
 
                 <Input label="Fullname" typeinput="text" error={errors.fullname} required={true} errormessage="Minimum 10 characters required" register={{ ...register('fullname', { required: true, minLength: 10 }) }} />
 

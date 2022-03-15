@@ -1,8 +1,8 @@
 import { type } from 'os';
 import React from 'react'
 import styled from 'styled-components'
-import {MdOutlineAttachFile} from 'react-icons/md'
-import { useForm, UseFormProps } from 'react-hook-form';
+import { useState } from 'react';
+import { MdOutlineAttachFile } from 'react-icons/md'
 import PhoneInput from 'react-phone-number-input';
 
 const InputBlock = styled.div`
@@ -115,30 +115,38 @@ const UploadResume = styled.input`
 `;
 
 
-interface InputProps{
-    label:string,
-    typeinput:string,
-    register:any,
-    required:boolean,
-    error:any,
-    errormessage:string 
+interface InputProps {
+    label: string,
+    typeinput: string,
+    register: any,
+    required: boolean,
+    error: any,
+    errormessage: string
 }
 
 
-export const Input :React.FC<InputProps> =({label,typeinput,register,required,errormessage,error}) => {
+export const Input: React.FC<InputProps> = ({ label, typeinput, register, required, errormessage, error }) => {
+
+    const [resumeUploaded, setUploaded] = useState(false);
+
+    const resumeUpload = (e: any) => {
+        setUploaded(true);
+        console.log(e.target.files[0])
+    }
+
     return (
-    <InputBlock>
-        {required ? <RequiredLabel>{label}</RequiredLabel> : <Label>{label}</Label>}
-        <div>
-            {
-                typeinput === "file" ?<ResumeBlock><UploadResume type={typeinput} className="custom-file-input"/></ResumeBlock>    :
-                 typeinput === 'tel'? 
-                        <div><PhoneInput className='phoneinput' value={null} onChange={null} {...register}/>{error ? <small style={{color:"red"}}>{errormessage}</small>:null}</div>:<InputTextBlock>
-                                    <InputBar type={typeinput} {...register}/>
-                                    {error ? <small style={{color:"red"}}>{errormessage}</small>:null}
-                                </InputTextBlock>
-            }
-        </div>
-    </InputBlock>
-  )
+        <InputBlock>
+            {required ? <RequiredLabel>{label}</RequiredLabel> : <Label>{label}</Label>}
+            <div>
+                {
+                    typeinput === "file" ? <div><ResumeBlock><UploadResume type={typeinput} className="custom-file-input" onChange={resumeUpload} accept="application/pdf" /></ResumeBlock>{!resumeUploaded ? <small style={{ color: "red" }}>{errormessage}</small> : null}</div> :
+                        typeinput === 'tel' ?
+                            <div><PhoneInput className='phoneinput' value={null} onChange={null} {...register} />{error ? <small style={{ color: "red" }}>{errormessage}</small> : null}</div> : <InputTextBlock>
+                                <InputBar type={typeinput} {...register} />
+                                {error ? <small style={{ color: "red" }}>{errormessage}</small> : null}
+                            </InputTextBlock>
+                }
+            </div>
+        </InputBlock>
+    )
 }
