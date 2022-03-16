@@ -5,11 +5,12 @@ import { SelectionForm } from '../SelectionForm/SelectionForm';
 import ReCAPTCHA from "react-google-recaptcha";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { RaceDropDown } from '../RaceDropDown/RaceDropDown';
-import { Path, PathValue, useForm } from 'react-hook-form';
+import {useForm } from 'react-hook-form';
 import {addDoc,collection} from 'firebase/firestore';
 import { db } from '../Firebase/Firebase';
 
-import {getDownloadURL, getStorage,ref,uploadBytes} from 'firebase/storage'
+
+import {getDownloadURL, getStorage,ref,uploadBytesResumable,uploadBytes} from 'firebase/storage'
 
 
 
@@ -244,12 +245,12 @@ type FormType = {
 }
 
 export const Details = () => {
+
     const { register, handleSubmit, formState: { errors }, watch } = useForm<FormType>();
     const [moredetail, showDetail] = useState(false);
     const [gendervaluechange, setGender] = useState(false);
     const gendervalue = watch('gender');
     const[captcha,setCaptcha] = useState(false);
-    const [upload,setUpload] = useState(false);
     const applicantCollection = collection(db , "applicants")
 
     function dropdown() {
@@ -257,41 +258,49 @@ export const Details = () => {
     }
     
     const newApplicant = async(data:object) =>{
-
-        
-        console.log(data)
         await addDoc(applicantCollection,data)
     }
     const storage=getStorage();                                   //getting a storage
-    const file = new File([""],"uploaddata");
-    const resumeUpload = (e:any) => {
+    let link:any;
+    const uploadResume = (data: { [x: string]: any }) => {
+        const storageRef = ref(storage, "pdf/" + data.resume[0].name);
+        const uploadTask = uploadBytesResumable(storageRef, data.resume[0]);
+    
+       console.log("uploaded");
+            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+              console.log("File available at", downloadURL);
+                    data.resume= downloadURL;
+              
+                })
+            }
+    /*const resumeUpload = (e:any) => {
         const file = e.target.files[0];
         const fileLength = e.target.files.length;
-        const pdfRef = ref(storage,"Pdf/"+ file.name);//create a referance where you want to store the file.
-            uploadBytes(pdfRef, file).then((snapshot) => {
-                          //upload file to storage
-            getDownloadURL(pdfRef).then((downloadURL) => {
-                            console.log('File available at', downloadURL);
-                          });
-            console.log('Uploaded a blob or file!');
-          });
-
+        const pdfRef = ref(storage,"Pdf/"+ file);//create a referance where you want to store the file.
+        console.log(file);
+        uploadBytes(pdfRef,file).then((snapshot) => {
+                      //upload file to storage
+        getDownloadURL(pdfRef).then((downloadURL) => {
+                        console.log('File available at', downloadURL);
+                      });
+        console.log('Uploaded a blob or file!');
+      });
         if(fileLength === 1){
             setUpload(true)
         };
-    }
-
+    }*/
     const FormSubmit = handleSubmit((data) => {
         if(gendervalue != 'Select ...'){
             setGender(false);
         }
-        if (gendervalue && captcha && upload) {
-            
-            newApplicant(data);
-            console.log(data);
-        }
-        else {
+        else{
             setGender(true);
+        }
+        
+        if (gendervalue && captcha ) {
+            uploadResume(data);
+            data.resume = "Uploaded Resume as " + data.resume[0].name;
+            newApplicant(data);
         }
     })
 
@@ -301,7 +310,8 @@ export const Details = () => {
                 <Headings >SUBMIT YOUR APPLICATION</Headings>
                 <InputBlock>
                 <RequiredLabel>Resume/CV</RequiredLabel> 
-                <ResumeBlock><UploadResume type="file" className="custom-file-input" accept="application/pdf" onChange={resumeUpload}/></ResumeBlock>
+                <ResumeBlock><UploadResume type="file" className="custom-file-input" accept="application/pdf" 
+                {...register("resume")}/></ResumeBlock>
                 </InputBlock>
 
                 <Input label="Fullname" typeinput="text" error={errors.fullname} required={true} errormessage="Minimum 10 characters required" register={{ ...register('fullname', { required: true, minLength: 10 }) }} />
@@ -354,5 +364,5 @@ export const Details = () => {
                 <SubmitButtonBlock><SubmitApplicationButton type="submit" value="Submit Application" /></SubmitButtonBlock>
             </DetailInnerBlock>
         </DetailBlock>
-    )
+    );
 }
