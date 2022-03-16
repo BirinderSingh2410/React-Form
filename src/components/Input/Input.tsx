@@ -5,6 +5,9 @@ import { useState } from 'react';
 import { MdOutlineAttachFile } from 'react-icons/md'
 import PhoneInput from 'react-phone-number-input';
 
+
+
+
 const InputBlock = styled.div`
     width:100%;
     text-align:left;
@@ -129,17 +132,14 @@ export const Input: React.FC<InputProps> = ({ label, typeinput, register, requir
 
     const [resumeUploaded, setUploaded] = useState(false);
 
-    const resumeUpload = (e: any) => {
-        setUploaded(true);
-        console.log(e.target.files[0])
-    }
-
+    
+    
     return (
         <InputBlock>
             {required ? <RequiredLabel>{label}</RequiredLabel> : <Label>{label}</Label>}
             <div>
                 {
-                    typeinput === "file" ? <div><ResumeBlock><UploadResume type={typeinput} className="custom-file-input" onChange={resumeUpload} accept="application/pdf" /></ResumeBlock>{!resumeUploaded ? <small style={{ color: "red" }}>{errormessage}</small> : null}</div> :
+                    typeinput === "file" ? <div><ResumeBlock><UploadResume type={typeinput} className="custom-file-input"  accept="application/pdf" /></ResumeBlock>{error ? <small style={{ color: "red" }}>{errormessage}</small> : null}</div> :
                         typeinput === 'tel' ?
                             <div><PhoneInput className='phoneinput' value={null} onChange={null} {...register} />{error ? <small style={{ color: "red" }}>{errormessage}</small> : null}</div> : <InputTextBlock>
                                 <InputBar type={typeinput} {...register} />

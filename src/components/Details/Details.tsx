@@ -5,9 +5,11 @@ import { SelectionForm } from '../SelectionForm/SelectionForm';
 import ReCAPTCHA from "react-google-recaptcha";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { RaceDropDown } from '../RaceDropDown/RaceDropDown';
-import { useForm } from 'react-hook-form';
+import { Path, PathValue, useForm } from 'react-hook-form';
 import {addDoc,collection} from 'firebase/firestore';
 import { db } from '../Firebase/Firebase';
+
+import {getDownloadURL, getStorage,ref,uploadBytes} from 'firebase/storage'
 
 
 
@@ -126,7 +128,97 @@ const InputBar = styled.input`
 const SubmitButtonBlock = styled.div`
     width:100%;
     text-align: -webkit-center;
-` 
+` ;
+const ResumeBlock = styled.div`
+    width: 180px;
+    height: 45px;
+.custom-file-input::-webkit-file-upload-button {
+    visibility: hidden;
+  }
+  .custom-file-input::before {
+    content:'ATTACH RESUME/CV';
+    display: inline-block;
+    background: linear-gradient(top, #f9f9f9, #e3e3e3);
+    border: 1px solid #999;
+    border-radius: 3px;
+    padding:10px 10px;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    text-shadow: 1px 1px #fff;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .custom-file-input:hover::before {
+    border-color: black;
+  }
+  .custom-file-input:active::before {
+    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+  }
+`;
+const UploadResume = styled.input`
+    border-radius: 4px;
+    border: 0.2px solid silver;
+    background-color:#EFEFEF;
+    text-align:center;
+    width:169px;
+`;
+
+
+const InputBlock = styled.div`
+    width:100%;
+    text-align:left;
+    display:flex;  
+    justify-content:space-between;
+    margin-bottom: 4vh;
+    div{
+        width:70%;
+        .phoneinput{
+            width:99%;
+            display:flex;
+            select{
+                width:100%;
+                height:40px;
+                border-radius: 4px;
+                border: 0.2px solid silver;
+                font-size:10px;
+            }
+            .PhoneInputCountry{
+                width:10%;
+            }
+            .PhoneInputCountryIcon
+            {
+                width:20px;
+            }
+            input{
+                width: 90%;
+                height: 40px;
+                border-radius: 4px;
+                border: 0.2px solid silver;
+                font-size:18px;
+            }
+        }
+    }
+    @media (max-width: 800px){
+        flex-direction:column;
+        div{
+            width:95%;
+        }
+    }
+`;
+const RequiredLabel = styled.p`
+    ::after{
+        content:'*';
+        color:red;
+    }
+    color: #515358;
+    font:20px;
+    
+    @media(max-width:800px){
+        margin-bottom:2vh;
+}
+`;
 const optiontag = [
     ["Select ...", "Male", "Female", "Declinetoself-identify"],
     ["Select ...", "Hispanic or Latino", "White (Not Hispanic or Latino)", "Black or African American (Not Hispanic or Latino)", "Native Hawaiian or Other Pacific Islander (Not Hispanic or Latino)", "Asian (Not Hispanic or Latino)", "American Indian or Alaska Native (Not Hispanic or Latino)", "Two or More Races (Not Hispanic or Latino)"],
@@ -145,6 +237,7 @@ type FormType = {
     other: any,
     gender: string,
     race: string,
+    resume:any,
     veteranstatus: string,
     response: string,
     additionalinfo: string
@@ -156,6 +249,7 @@ export const Details = () => {
     const [gendervaluechange, setGender] = useState(false);
     const gendervalue = watch('gender');
     const[captcha,setCaptcha] = useState(false);
+    const [upload,setUpload] = useState(false);
     const applicantCollection = collection(db , "applicants")
 
     function dropdown() {
@@ -163,14 +257,36 @@ export const Details = () => {
     }
     
     const newApplicant = async(data:object) =>{
+
+        
+        console.log(data)
         await addDoc(applicantCollection,data)
+    }
+    const storage=getStorage();                                   //getting a storage
+    const file = new File([""],"uploaddata");
+    const resumeUpload = (e:any) => {
+        const file = e.target.files[0];
+        const fileLength = e.target.files.length;
+        const pdfRef = ref(storage,"Pdf/"+ file.name);//create a referance where you want to store the file.
+            uploadBytes(pdfRef, file).then((snapshot) => {
+                          //upload file to storage
+            getDownloadURL(pdfRef).then((downloadURL) => {
+                            console.log('File available at', downloadURL);
+                          });
+            console.log('Uploaded a blob or file!');
+          });
+
+        if(fileLength === 1){
+            setUpload(true)
+        };
     }
 
     const FormSubmit = handleSubmit((data) => {
         if(gendervalue != 'Select ...'){
             setGender(false);
         }
-        if (gendervalue && captcha) {
+        if (gendervalue && captcha && upload) {
+            
             newApplicant(data);
             console.log(data);
         }
@@ -183,30 +299,31 @@ export const Details = () => {
         <DetailBlock onSubmit={FormSubmit}>
             <DetailInnerBlock>
                 <Headings >SUBMIT YOUR APPLICATION</Headings>
-
-
-                <Input label="Resume/CV" typeinput='file' error={null} required={true} register={null} errormessage="Upload Resume" />
+                <InputBlock>
+                <RequiredLabel>Resume/CV</RequiredLabel> 
+                <ResumeBlock><UploadResume type="file" className="custom-file-input" accept="application/pdf" onChange={resumeUpload}/></ResumeBlock>
+                </InputBlock>
 
                 <Input label="Fullname" typeinput="text" error={errors.fullname} required={true} errormessage="Minimum 10 characters required" register={{ ...register('fullname', { required: true, minLength: 10 }) }} />
 
-                <Input label="Email" errormessage="This Field is Required" error={errors.email} typeinput="type" required={true} register={{ ...register('email', { required: true,pattern:/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/ }) }} />
+                <Input label="Email" errormessage="This Field is Required" error={errors.email} required={true}typeinput="type"  register={{ ...register('email', { required: true,pattern:/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/ }) }} />
 
-                <Input label="Phone" errormessage="Enter the valid Phone Number" typeinput='tel' error={errors.phone} required={false} register={{ ...register('phone',{pattern:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,maxLength:15}) }} />
+                <Input label="Phone" required={false} errormessage="Enter the valid Phone Number" typeinput='tel' error={errors.phone}  register={{ ...register('phone',{pattern:/^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/,maxLength:15}) }} />
 
-                <Input label="Current Company" errormessage="" error={null} typeinput="text" required={false} register={{ ...register('currentcompany') }} />
+                <Input label="Current Company" required={false} errormessage="" error={null} typeinput="text"  register={{ ...register('currentcompany') }} />
 
                 <Headings>LINKS</Headings>
 
 
-                <Input label="LinkedIn URL" errormessage="Enter the valid URL" typeinput='text' error={errors.linkedin} required={false} register={{ ...register('linkedin', { pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:5 }) }} />
+                <Input label="LinkedIn URL" errormessage="Enter the valid URL" required={false} typeinput='text' error={errors.linkedin}  register={{ ...register('linkedin', { pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:5 }) }} />
 
-                <Input label="Twitter URL" typeinput="text" errormessage="Enter the valid URL" error={null} required={false} register={{ ...register('twitter',{minLength:7,pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/},) }} />
+                <Input label="Twitter URL" required={false} typeinput="text" errormessage="Enter the valid URL" error={null}  register={{ ...register('twitter',{minLength:7,pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/},) }} />
 
-                <Input label="GitHub URL" typeinput="text" errormessage="" required={false} error={null} register={{ ...register('github') }} />
+                <Input label="GitHub URL" required={false} typeinput="text" errormessage="" error={null} register={{ ...register('github') }} />
 
-                <Input label="Portfolio URL" typeinput='text' errormessage="Enter the valid URL" error={null} required={false} register={{ ...register('portfolio',{pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:7}) }} />
+                <Input required={false} label="Portfolio URL" typeinput='text' errormessage="Enter the valid URL" error={null}  register={{ ...register('portfolio',{pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:7}) }} />
 
-                <Input label="Other Website" typeinput="text" errormessage="Enter the valid URL" error={null} required={false} register={{ ...register('other',{pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:7}) }} />
+                <Input required={false} label="Other Website" typeinput="text" errormessage="Enter the valid URL" error={null}  register={{ ...register('other',{pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:7}) }} />
 
                 <Headings>PREFERRED PRONOUNS</Headings>
                 <Resopnse placeholder='Type your response' {...register('response', { maxLength:20 })} />

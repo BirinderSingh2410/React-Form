@@ -26,7 +26,7 @@ const SelectionFormBlock = styled.div`
 
     @media (max-width:800px){
         flex-direction:column;
-        height:10vh;
+        height:70px;
 
     }
 `;
