@@ -1,8 +1,6 @@
-import { type } from 'os';
 import React from 'react'
 import styled from 'styled-components'
-import { useState } from 'react';
-import { MdOutlineAttachFile } from 'react-icons/md'
+
 import PhoneInput from 'react-phone-number-input';
 
 
@@ -81,6 +79,7 @@ const InputBar = styled.input`
     border: 0.2px solid silver;
     font-size:18px;
 `;
+
 const ResumeBlock = styled.div`
     width: 180px;
     height: 45px;
@@ -129,18 +128,14 @@ interface InputProps {
 
 
 export const Input: React.FC<InputProps> = ({ label, typeinput, register, required, errormessage, error }) => {
-
-    const [resumeUploaded, setUploaded] = useState(false);
-
-    
+  
     
     return (
         <InputBlock>
             {required ? <RequiredLabel>{label}</RequiredLabel> : <Label>{label}</Label>}
             <div>
-                {
-                    typeinput === "file" ? <div><ResumeBlock><UploadResume type={typeinput} className="custom-file-input"  accept="application/pdf" /></ResumeBlock>{error ? <small style={{ color: "red" }}>{errormessage}</small> : null}</div> :
-                        typeinput === 'tel' ?
+                        {
+                            typeinput === 'tel' ?
                             <div><PhoneInput className='phoneinput' value={null} onChange={null} {...register} />{error ? <small style={{ color: "red" }}>{errormessage}</small> : null}</div> : <InputTextBlock>
                                 <InputBar type={typeinput} {...register} />
                                 {error ? <small style={{ color: "red" }}>{errormessage}</small> : null}

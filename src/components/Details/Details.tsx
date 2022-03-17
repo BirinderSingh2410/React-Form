@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState ,useEffect} from 'react'
 import { Input } from '../Input/Input';
 import styled from 'styled-components';
 import { SelectionForm } from '../SelectionForm/SelectionForm';
@@ -235,6 +235,7 @@ type FormType = {
     twitter: string,
     portfolio: string,
     github: string,
+    downloadUrl:string;
     other: any,
     gender: string,
     race: string,
@@ -248,11 +249,13 @@ export const Details = () => {
 
     const { register, handleSubmit, formState: { errors }, watch } = useForm<FormType>();
     const [moredetail, showDetail] = useState(false);
-    const [gendervaluechange, setGender] = useState(false);
     const gendervalue = watch('gender');
+    const[filesize,setFileSize] = useState(false);
+    const[upload,setUpload] = useState(false);
     const[captcha,setCaptcha] = useState(false);
+    const[gender,setGender]=useState(true);
     const applicantCollection = collection(db , "applicants")
-
+    let gendervaluechange = true;
     function dropdown() {
         showDetail(!moredetail);
     }
@@ -261,46 +264,40 @@ export const Details = () => {
         await addDoc(applicantCollection,data)
     }
     const storage=getStorage();                                   //getting a storage
-    let link:any;
     const uploadResume = (data: { [x: string]: any }) => {
-        const storageRef = ref(storage, "pdf/" + data.resume[0].name);
+        const storageRef = ref(storage, "resume/" + data.resume[0].name);
         const uploadTask = uploadBytesResumable(storageRef, data.resume[0]);
     
        console.log("uploaded");
-            getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-              console.log("File available at", downloadURL);
-                    data.resume= downloadURL;
-              
-                })
-            }
-    /*const resumeUpload = (e:any) => {
-        const file = e.target.files[0];
-        const fileLength = e.target.files.length;
-        const pdfRef = ref(storage,"Pdf/"+ file);//create a referance where you want to store the file.
-        console.log(file);
-        uploadBytes(pdfRef,file).then((snapshot) => {
-                      //upload file to storage
-        getDownloadURL(pdfRef).then((downloadURL) => {
-                        console.log('File available at', downloadURL);
-                      });
-        console.log('Uploaded a blob or file!');
-      });
-        if(fileLength === 1){
-            setUpload(true)
-        };
-    }*/
-    const FormSubmit = handleSubmit((data) => {
-        if(gendervalue != 'Select ...'){
-            setGender(false);
+       const uploadUrl=()=>{
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {                 
+                  data.resume = downloadURL.toString();
+                  newApplicant(data);
+              })
+              setTimeout(()=>{alert("Data is saved");window.location.reload();},1000)
+          }
+          setTimeout(uploadUrl,1000);
+       }
+       
+    function uploadStatus(e:any){
+        setUpload(true);
+        if(e.target.files[0].size > 25000000)
+        {
+            setFileSize(true);
         }
-        else{
+    }
+    const FormSubmit = handleSubmit((data) => {          
+        if(gendervalue != 'Select ...'){
+            gendervaluechange=true;
             setGender(true);
         }
+        else{
+            gendervaluechange=false;
+            setGender(false);
+        }
         
-        if (gendervalue && captcha ) {
+        if(captcha && (!filesize && gendervaluechange)) {
             uploadResume(data);
-            data.resume = "Uploaded Resume as " + data.resume[0].name;
-            newApplicant(data);
         }
     })
 
@@ -309,9 +306,15 @@ export const Details = () => {
             <DetailInnerBlock>
                 <Headings >SUBMIT YOUR APPLICATION</Headings>
                 <InputBlock>
-                <RequiredLabel>Resume/CV</RequiredLabel> 
-                <ResumeBlock><UploadResume type="file" className="custom-file-input" accept="application/pdf" 
-                {...register("resume")}/></ResumeBlock>
+                    <RequiredLabel>Resume/CV</RequiredLabel> 
+                    <ResumeBlock>
+                        <UploadResume type="file" className="custom-file-input" accept="application/pdf" 
+                        {...register("resume",{required:true})} onChange={uploadStatus}/>
+
+                        {!upload && errors.resume ? <small style={{color:"red"}}> Upload resume!</small>:null} 
+                        {upload && !filesize ?  <small style={{color:"#515358"}}> Resume Uploaded!!</small>:null}{filesize ?  <small style={{color:"red"}}>File Size exceeding 5KB</small>:null}
+
+                    </ResumeBlock>
                 </InputBlock>
 
                 <Input label="Fullname" typeinput="text" error={errors.fullname} required={true} errormessage="Minimum 10 characters required" register={{ ...register('fullname', { required: true, minLength: 10 }) }} />
@@ -325,13 +328,13 @@ export const Details = () => {
                 <Headings>LINKS</Headings>
 
 
-                <Input label="LinkedIn URL" errormessage="Enter the valid URL" required={false} typeinput='text' error={errors.linkedin}  register={{ ...register('linkedin', { pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:5 }) }} />
+                <Input label="LinkedIn URL" errormessage="Enter the valid URL" required={false} typeinput='text' error={errors.linkedin}  register={{ ...register('linkedin', { pattern:/http(s?):|[a-zA-Z0-9\-]+\.|[linkedin][linkedin/~\-]+\.[a-zA-Z0-9/~\-_,&=\?\.;]+[^\.,\s<]/,minLength:5 }) }} />
 
-                <Input label="Twitter URL" required={false} typeinput="text" errormessage="Enter the valid URL" error={null}  register={{ ...register('twitter',{minLength:7,pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/},) }} />
+                <Input label="Twitter URL" required={false} typeinput="text" errormessage="Enter the valid URL" error={null}  register={{ ...register('twitter',{minLength:7,pattern:/^@[A-Za-z0-9_]{1,15}$/},) }} />
 
                 <Input label="GitHub URL" required={false} typeinput="text" errormessage="" error={null} register={{ ...register('github') }} />
 
-                <Input required={false} label="Portfolio URL" typeinput='text' errormessage="Enter the valid URL" error={null}  register={{ ...register('portfolio',{pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:7}) }} />
+                <Input required={false} label="Portfolio URL" typeinput='text' errormessage="Enter the valid URL" error={null}  register={{ ...register('portfolio',{minLength:7}) }} />
 
                 <Input required={false} label="Other Website" typeinput="text" errormessage="Enter the valid URL" error={null}  register={{ ...register('other',{pattern:/^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/,minLength:7}) }} />
 
@@ -349,7 +352,8 @@ export const Details = () => {
                     Our company values diversity. To ensure that we comply with reporting requirements and to learn more about how we can increase diversity in our candidate pool, we invite you to voluntarily provide demographic information in a confidential survey at the end of this application. Providing this information is optional. It will not be accessible or used in the hiring process, and has no effect on your opportunity for employment.
                 </USEmployeeContent>
 
-                <SelectionForm Icon={null} selectionlabel='Gender' rightoption={gendervaluechange} option={optiontag[0]} register={{ ...register('gender', { required: true, }) }} />
+                <SelectionForm Icon={null} selectionlabel='Gender' rightoption={gender} option={optiontag[0]} register={{ ...register('gender', { required: true }) }} />
+                
 
                 <SelectionForm Icon={<AiOutlineExclamationCircle onClick={dropdown} />} rightoption={false} selectionlabel='Race' option={optiontag[1]} register={{ ...register('race', { required: true }) }} />
                 {moredetail ? <RaceDropDown /> : null}

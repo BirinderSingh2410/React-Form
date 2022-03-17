@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { icons } from 'react-icons';
 import styled from 'styled-components'
 import DownArrow from '../../assests/images/down-arrow-svgrepo-com.svg';
@@ -51,22 +51,22 @@ interface SelectionProp{
 }
 
 export const SelectionForm : React.FC<SelectionProp> = ({selectionlabel,option,Icon,register,rightoption}) => {
+    
   return (
     <SelectionFormBlock>
     
         <p>{selectionlabel} {Icon}</p>
         <SelectionBlock>
-            <select  {...register}>
+            <select  {...register} >
                 {
-                    option.map((i) =>{
+                    option.map((i,index) =>{
                         return(
-                            <option>{i}</option>
+                            <option key={index}>{i}</option>
                         )
                     })
                 }
-                <img src={DownArrow}/>
             </select>
-            {rightoption ? <small style={{color:"red"}}>Select valid option</small>:null}
+            {!rightoption && selectionlabel === "Gender"? <small style={{color:"red"}}>Select valid option</small>:null}
         </SelectionBlock>
     </SelectionFormBlock>
   )
