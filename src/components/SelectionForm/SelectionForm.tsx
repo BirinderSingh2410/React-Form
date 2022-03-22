@@ -1,7 +1,7 @@
-import React,{useState} from 'react'
-import { icons } from 'react-icons';
-import styled from 'styled-components'
-import DownArrow from '../../assests/images/down-arrow-svgrepo-com.svg';
+import React, { useState } from "react";
+import { icons } from "react-icons";
+import styled from "styled-components";
+
 
 const SelectionFormBlock = styled.div`
     width:70%;
@@ -31,43 +31,46 @@ const SelectionFormBlock = styled.div`
     }
 `;
 
-
 const SelectionBlock = styled.div`
-    display:flex;
-    flex-direction:column;
-    width:55%;
-    
-    @media (max-width:800px){
-        width:100%;
-    }
-`
+  display: flex;
+  flex-direction: column;
+  width: 55%;
 
-interface SelectionProp{
-    selectionlabel:string;
-    option:string[];
-    Icon:JSX.Element | null;
-    register:any,
-    rightoption:boolean
+  @media (max-width: 800px) {
+    width: 100%;
+  }
+`;
+
+interface SelectionProp {
+  selectionlabel: string;
+  option: string[];
+  Icon: JSX.Element | null;
+  register: any;
+  rightoption: boolean;
 }
 
-export const SelectionForm : React.FC<SelectionProp> = ({selectionlabel,option,Icon,register,rightoption}) => {
-    
+export const SelectionForm: React.FC<SelectionProp> = ({
+  selectionlabel,
+  option,
+  Icon,
+  register,
+  rightoption,
+}) => {
   return (
     <SelectionFormBlock>
-    
-        <p>{selectionlabel} {Icon}</p>
-        <SelectionBlock>
-            <select  {...register} >
-                {
-                    option.map((i,index) =>{
-                        return(
-                            <option key={index}>{i}</option>
-                        )
-                    })
-                }
-            </select>
-            {!rightoption && selectionlabel === "Gender"? <small style={{color:"red"}}>Select valid option</small>:null}
-        </SelectionBlock>
+      <p>
+        {selectionlabel} {Icon}
+      </p>
+      <SelectionBlock>
+        <select {...register}>
+          {option.map((i, index) => {
+            return <option key={index}>{i}</option>;
+          })}
+        </select>
+        {!rightoption && selectionlabel === "Gender" ? (
+          <small style={{ color: "red" }}>Select valid option</small>
+        ) : null}
+      </SelectionBlock>
     </SelectionFormBlock>
-  )
-}
+  );
+};
