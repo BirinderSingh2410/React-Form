@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState, useEffect } from "react";
 import { Input } from "../Input/Input";
 import styled from "styled-components";
 import { SelectionForm } from "../SelectionForm/SelectionForm";
@@ -15,6 +15,7 @@ import {
   getStorage,
   ref,
   uploadBytesResumable,
+  uploadBytes,
 } from "firebase/storage";
 
 const DetailBlock = styled.form`
@@ -38,7 +39,10 @@ const Captcha = styled.div`
     }
   }
 `;
-
+const SubmitApplication = styled.h1`
+  padding: 0 15%;
+  font-size: 20px;
+`;
 const Resopnse = styled.input`
   width: 76%;
   display: flex;
@@ -116,7 +120,13 @@ const USEmployeeContent = styled.p`
   color: #515357;
   font-size: 15px;
 `;
-
+const InputBar = styled.input`
+  width: 500px;
+  height: 45px;
+  border-radius: 4px;
+  margin-right: 10%;
+  border: 0.2px solid silver;
+`;
 const SubmitButtonBlock = styled.div`
   width: 100%;
   text-align: -webkit-center;
@@ -235,7 +245,8 @@ export const Details = () => {
     register,
     handleSubmit,
     formState: { errors },
-    watch
+    watch,
+    reset,
   } = useForm<FormType>();
   const [moredetail, showDetail] = useState(false);
   const gendervalue = watch("gender");
@@ -251,51 +262,28 @@ export const Details = () => {
     showDetail(!moredetail);
   }
 
-  const strapi = async (e: any) => {
-    //strapi database
+  const newApplicant = async (data: object) => {
+    await addDoc(applicantCollection, data);
+  };
 
-    const resumeFile = new FormData();
-    resumeFile.append("files", e.resume[0]);
-
-    const resumeStrapi = await fetch("http://localhost:1337/api/upload/", {
-      method: "POST",
-      body: resumeFile,
-    }).then((response) => response.json());
-
-    fetch("http://localhost:1337/api/resumedatas", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        data: {
-          fullname: e.fullname,
-          email: e.email,
-          resumeCV: resumeStrapi[0],
-          phone: e.phone,
-          company: e.currentcompany,
-          linkedIn: e.linkedin,
-          twitterUrl: e.twitter,
-          portfolioUrl: e.portfolio,
-          githubUrl: e.github,
-          otherWebsite: e.other,
-          gender: e.gender,
-          race: e.race,
-          veteranStatus: e.veteranstatus,
-          pronouns: e.response,
-          additionalInformation: e.additionalinfo,
-        },
-      }),
-    })
-      .then((response) => response.json())
-      .then((data) => console.log(data));
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
+  const storage = getStorage(); //Storage for firebase
+  const uploadResume = (data: { [x: string]: any }) => {
+    const storageRef = ref(storage, "resume/" + data.resume[0].name);
+        const uploadTask = uploadBytesResumable(storageRef, data.resume[0]);
+    
+       console.log("uploaded");
+       const uploadUrl=()=>{
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {                 
+                  data.resume = downloadURL.toString();
+                  newApplicant(data);
+              })
+              setTimeout(()=>{alert("Data is saved");window.location.reload();},1500)
+          }
+          setTimeout(uploadUrl,1000);
   };
 
   
-  function uploadStatus(e: any){
+  function uploadStatus(e: any) {
     //file upload validation
     setUpload(true);
     if (e.target.files[0].size > 25000000) {
@@ -315,7 +303,7 @@ export const Details = () => {
     }
 
     if (captcha && !filesize && gendervaluechange) {
-      strapi(data);
+      uploadResume(data);
     }
   });
 
