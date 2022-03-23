@@ -281,11 +281,12 @@ export const Details = () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {                 
                   data.resume = downloadURL.toString();
                   newApplicant(data);
-              }).then(dataSavedALert)
+              }).then(dataSavedALert);
               
               function dataSavedALert(){
                 alert(data.fullname+","+"Your data is saved");
               }
+
           }
           setTimeout(uploadUrl,1000);
   };
