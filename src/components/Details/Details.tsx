@@ -136,19 +136,20 @@ const ResumeBlock = styled.div`
   height: 45px;
   div {
     width: 180px;
-    background-color: #efefef;
-    border: 0.2px solid silver;
+    background-color: #ebecf0;
+    border: 0.2px solid #dfe0e4;
     border-radius: 3px;
     .upload-error{
         position:absolute;
         margin-left:10px;
-        margin-top:10px;
+        margin-top:5px;
     }
   }
   .attach-logo {
     font-size: 20px;
     position: absolute;
     margin-top: 8px;
+    color:#9696a2;
   }
   .custom-file-input::-webkit-file-upload-button {
     visibility: hidden;
@@ -160,6 +161,7 @@ const ResumeBlock = styled.div`
     padding: 10px 30px;
     width: 100%;
     outline: none;
+    color:#9696a2;
     white-space: nowrap;
     -webkit-user-select: none;
     cursor: pointer;
@@ -176,6 +178,7 @@ const UploadResume = styled.input`
   border-radius: 4px;
   text-align: center;
   width: 180px;
+  
 `;
 
 const InputBlock = styled.div`
@@ -249,6 +252,7 @@ export const Details = () => {
     reset,
   } = useForm<FormType>();
   const [moredetail, showDetail] = useState(false);
+  const [reload,setReload] = useState(false);
   const gendervalue = watch("gender");
   const [filesize, setFileSize] = useState(false);
   const [upload, setUpload] = useState(false);
@@ -261,6 +265,7 @@ export const Details = () => {
     //Race dropdown i button
     showDetail(!moredetail);
   }
+
 
   const newApplicant = async (data: object) => {
     await addDoc(applicantCollection, data);
@@ -276,8 +281,11 @@ export const Details = () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {                 
                   data.resume = downloadURL.toString();
                   newApplicant(data);
-              })
-              setTimeout(()=>{alert("Data is saved");window.location.reload();},1500)
+              }).then(dataSavedALert)
+              
+              function dataSavedALert(){
+                alert(data.fullname+","+"Your data is saved");
+              }
           }
           setTimeout(uploadUrl,1000);
   };
@@ -315,6 +323,7 @@ export const Details = () => {
           <RequiredLabel>Resume/CV</RequiredLabel>
           <ResumeBlock>
             <div>
+              <div>
               <MdAttachFile className="attach-logo" />
               <UploadResume
                 type="file"
@@ -323,7 +332,7 @@ export const Details = () => {
                 {...register("resume", { required: true })}
                 onChange={uploadStatus}
               />
-
+              </div>
               {!upload && errors.resume ? (
                 <small className="upload-error" style={{ color: "red" }}> Upload resume!</small>
               ) : null}

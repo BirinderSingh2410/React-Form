@@ -10,8 +10,11 @@ const DropDown = styled.div`
   }
 `;
 const ListBlock = styled.ul`
-  width: 400px;
+  width: 38%;
   text-align: left;
+  @media (max-width: 800px) {
+    width: 98%;
+  }
 `;
 const ListItem = styled.li`
   margin-bottom: 1vh;

@@ -68,7 +68,7 @@ const InputTextBlock = styled.div`
   flex-direction: column;
 `;
 const InputBar = styled.input`
-  width: 97%;
+  width: 96%;
   height: 40px;
   padding-left: 10px;
   border-radius: 4px;
