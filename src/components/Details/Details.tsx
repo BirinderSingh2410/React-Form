@@ -22,10 +22,11 @@ const DetailBlock = styled.form`
   width: 100%;
   background-color: #f9f9f9;
   padding-top: 1vh;
+  padding-bottom:10vh;
 `;
 const DataBlock = styled.div`
-  width: 85%;
-  margin-left: 15%;
+  width: 70%;
+  margin-left: 20%;
 `;
 const Captcha = styled.div`
   margin-top: 5vh;
@@ -44,7 +45,7 @@ const SubmitApplication = styled.h1`
   font-size: 20px;
 `;
 const Resopnse = styled.input`
-  width: 76%;
+  width: 92%;
   display: flex;
   flex-direction: column;
   height: 35px;
@@ -59,7 +60,7 @@ const Resopnse = styled.input`
 `;
 const CoverLetter = styled.textarea`
   padding-top: 10px;
-  width: 77%;
+  width: 93%;
   font-size: 16px;
   display: flex;
   flex-direction: column;
@@ -73,7 +74,7 @@ const CoverLetter = styled.textarea`
   }
 `;
 const HorizontalLine = styled.hr`
-  width: 75%;
+  width: 95%;
   margin-bottom: 4vh;
   margin-top: 10vh;
   color: #515357;
@@ -116,9 +117,9 @@ const Headings = styled.h1`
   margin-bottom: 5vh;
 `;
 const USEmployeeContent = styled.p`
-  width: 74%;
+  width: 99%;
   color: #515357;
-  font-size: 15px;
+  font-size: 14.5px;
 `;
 const InputBar = styled.input`
   width: 500px;
@@ -150,6 +151,7 @@ const ResumeBlock = styled.div`
     position: absolute;
     margin-top: 8px;
     color:#9696a2;
+    margin-left:4px;
   }
   .custom-file-input::-webkit-file-upload-button {
     visibility: hidden;
@@ -495,7 +497,9 @@ export const Details = () => {
         />
 
         <SelectionForm
-          Icon={<AiOutlineExclamationCircle onClick={dropdown} />}
+          Icon={<AiOutlineExclamationCircle style={{    position: "absolute",
+            marginTop: "4px",
+            marginLeft: "6px"}} onClick={dropdown} />}
           rightoption={false}
           selectionlabel="Race"
           option={optiontag[1]}

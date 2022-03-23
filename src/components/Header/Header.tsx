@@ -20,7 +20,7 @@ const Image = styled.img.attrs({
 })`
   width: 200px;
   height: 80px;
-  padding: 0 15%;
+  padding: 0 20%;
   position: relatives;
 `;
 

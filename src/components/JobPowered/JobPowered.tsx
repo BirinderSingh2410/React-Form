@@ -9,7 +9,6 @@ const LeverBlock = styled.div`
   align-items: center;
   padding-top: 7vh;
   padding-bottom: 20vh;
-  margin-top: 10vh;
   background-color: #edeef1;
   a {
     text-decoration: none;

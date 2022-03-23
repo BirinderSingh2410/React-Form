@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-
 import styled from "styled-components";
 
 
 const SelectionFormBlock = styled.div`
-    width:70%;
+    width:90%;
     height:10vh;
     margin-top:4vh;
     display:flex;
@@ -14,28 +13,30 @@ const SelectionFormBlock = styled.div`
         height:50px;
     }
     select{
-        width:100%;
-        height:40px;
-        background-color:#E2E2E2;
+        width:97%;
+        height:50px;
+        background:#E2E2E2
+        url("data:image/svg+xml;utf8,<svg viewBox='0 0 140 140' width='24' height='26' xmlns='http://www.w3.org/2000/svg'><g><path d='m121.3,34.6c-1.6-1.6-4.2-1.6-5.8,0l-51,51.1-51.1-51.1c-1.6-1.6-4.2-1.6-5.8,0-1.6,1.6-1.6,4.2 0,5.8l53.9,53.9c0.8,0.8 1.8,1.2 2.9,1.2 1,0 2.1-0.4 2.9-1.2l53.9-53.9c1.7-1.6 1.7-4.2 0.1-5.8z' fill='grey'/></g></svg>")
+        no-repeat;
+        background-position: right 5px top 50%;
         color:#515357;
         font-size:17px;
-        border: none;
         border-radius:4px;
         padding-left:1vw;
+        -webkit-appearance: none;
         border:none;
     }
-
     @media (max-width:800px){
+      display:flex;
         flex-direction:column;
         height:70px;
-
     }
 `;
 
 const SelectionBlock = styled.div`
   display: flex;
   flex-direction: column;
-  width: 55%;
+  width: 60%;
   @media (max-width: 800px) {
     width: 100%;
   }
@@ -63,6 +64,7 @@ export const SelectionForm: React.FC<SelectionProp> = ({
       </p>
       <SelectionBlock>
         <select {...register}>
+        
           {option.map((i, index) => {
             return <option key={index}>{i}</option>;
           })}

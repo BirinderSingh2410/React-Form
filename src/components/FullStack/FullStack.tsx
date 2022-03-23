@@ -9,7 +9,7 @@ const FullStackBlock = styled.div`
 const FullStackContentBlock = styled.div`
   width: 70%;
   right: 0;
-  margin: 0 15%;
+  margin: 0 20%;
   text-align: left;
   padding-bottom: 6vh;
 `;
